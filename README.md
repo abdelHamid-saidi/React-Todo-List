@@ -2,7 +2,6 @@
 
 Une application Todo moderne et responsive construite avec **ReactJS**. Cette app permet de gérer des tâches quotidiennes avec une interface agréable, un mode clair/sombre, et des fonctionnalités d'édition et de suppression en un clic.
 
----
 
 ## 🎨 Fonctionnalités
 
@@ -13,7 +12,6 @@ Une application Todo moderne et responsive construite avec **ReactJS**. Cette ap
 - 🌙 Mode sombre et clair avec toggle automatique
 - 🧼 Interface propre et fluide avec des animations CSS
 
----
 
 ## 📸 Aperçu
 
@@ -24,7 +22,6 @@ Une application Todo moderne et responsive construite avec **ReactJS**. Cette ap
 ![Dark mode](https://github.com/user-attachments/assets/8e115d48-4604-421e-b5d9-e7fda82f16c6)
 
 
----
 
 ## 🚀 Installation
 
