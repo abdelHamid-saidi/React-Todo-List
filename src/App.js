@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import "./App.css";
 
 function App() {
@@ -16,14 +17,13 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (task.trim().length < 3) {
-      setShowWarning(true);  
+      setShowWarning(true);
       return;
     }
-    setTodos([...todos, { id: Date.now(), text: task, completed: false }]);
+    setTodos([...todos, { id: Date.now().toString(), text: task, completed: false }]);
     setTask("");
-    setShowWarning(false);  
+    setShowWarning(false);
   };
-
 
   const handleDelete = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
@@ -57,8 +57,15 @@ function App() {
     }
   };
 
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+    const items = Array.from(todos);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    setTodos(items);
+  };
 
-  const sunIcon = (
+    const sunIcon = (
     <svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="34" height="34">
       <path
         d="M965.23,530.62a13.33,13.33,0,1,1-13.33-13.33,13.33,13.33,0,0,1,13.33,13.33m-11.66-18.33a1.67,1.67,0,1,1-1.67-1.67,1.66,1.66,0,0,1,1.67,1.67m0,36.66a1.67,1.67,0,1,1-1.67-1.66,1.67,1.67,0,0,1,1.67,1.66m16.66-16.66a1.67,1.67,0,1,1,1.67-1.67,1.66,1.66,0,0,1-1.67,1.67m-36.66,0a1.67,1.67,0,1,1,1.66-1.67,1.67,1.67,0,0,1-1.66,1.67M966,518.83a1.66,1.66,0,1,1-2.39-2.31l0,0a1.66,1.66,0,0,1,2.35,2.35m-25.93,25.93a1.66,1.66,0,0,1-2.39-2.31l0,0a1.66,1.66,0,0,1,2.35,2.35m23.58,0a1.67,1.67,0,0,1,2.31-2.4l0,0a1.66,1.66,0,0,1-2.35,2.35m-25.93-25.93a1.67,1.67,0,0,1,2.31-2.4l0,.05a1.66,1.66,0,0,1-2.35,2.35"
@@ -86,22 +93,13 @@ function App() {
     </svg>
   );
 
-
-
   return (
     <div className="todo-container">
-      <div className="header-bar"> 
-        <img
-          src="./svg/logo.svg"
-          alt="Logo"
-          className="logo"
-        />
+      <div className="header-bar">
+        <img src="./svg/logo.svg" alt="Logo" className="logo" />
         <h2>Ma Todo List</h2>
-        <button
-          onClick={() => setDarkMode((prev) => !prev)}
-          className="icon-btn theme-btn"
-        >
-          {darkMode ? sunIcon : moonIcon}
+        <button onClick={() => setDarkMode((prev) => !prev)} className="icon-btn theme-btn">
+           {darkMode ? sunIcon : moonIcon}
         </button>
       </div>
 
@@ -118,89 +116,99 @@ function App() {
             Ajouter
           </button>
         </form>
-
-        {showWarning && (
-          <p className="warning">Minimum 3 caractères requis</p>
-        )}
+        {showWarning && <p className="warning">Minimum 3 caractères requis</p>}
       </div>
 
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id} className={todo.completed ? "completed" : ""}>
-            <div className="todo-item">
-              <div className="checkbox-wrapper-12">
-                <div className="cbx">
-                  <input
-                    id={`cbx-${todo.id}`}
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => handleToggle(todo.id)}
-                  />
-                  <label htmlFor={`cbx-${todo.id}`}></label>
-                  <svg width="15" height="14" viewBox="0 0 15 14" fill="none">
-                    <path d="M2 8.36364L6.23077 12L13 2"></path>
-                  </svg>
-                </div>
-
-                {/* SVG filter for gooey effect */}
-                <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-                  <defs>
-                    <filter id="goo-12">
-                      <feGaussianBlur
-                        in="SourceGraphic"
-                        stdDeviation="4"
-                        result="blur"
-                      ></feGaussianBlur>
-                      <feColorMatrix
-                        in="blur"
-                        mode="matrix"
-                        values="1 0 0 0 0  
-                    0 1 0 0 0  
-                    0 0 1 0 0  
-                    0 0 0 22 -7"
-                        result="goo-12"
-                      ></feColorMatrix>
-                      <feBlend in="SourceGraphic" in2="goo-12"></feBlend>
-                    </filter>
-                  </defs>
-                </svg>
-              </div>
-
-              {editingId === todo.id ? (
-                <input
-                  autoFocus
-                  type="text"
-                  value={editingText}
-                  onChange={handleEditChange}
-                  onBlur={() => handleEditSubmit(todo.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleEditSubmit(todo.id);
-                  }}
-                  className="edit-input"
-                />
-              ) : (
-                <span
-                  onClick={() => handleEdit(todo.id, todo.text)}
-                  className="todo-text"
-                  title="Cliquer pour modifier"
-                >
-                  {todo.text}
-                </span>
-              )}
-            </div>
-
-            <button
-              onClick={() => handleDelete(todo.id)}
-              className="delete-btn"
-              title="Supprimer"
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="todoList">
+          {(provided) => (
+            <ul
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={{ padding: 0, listStyle: "none" }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-              </svg>
-            </button>
-          </li>
-        ))}
-      </ul>
+              {todos.map((todo, index) => (
+                <Draggable key={todo.id} draggableId={todo.id.toString()} index={index}>
+                  {(provided, snapshot) => (
+                    <li
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className={`todo-list-item ${todo.completed ? "completed" : ""}`}
+                      style={{
+                        ...provided.draggableProps.style,
+                        transform: snapshot.isDragging && provided.draggableProps.style?.transform
+                          ? provided.draggableProps.style.transform.replace(
+                              /translate\(([^,]+), ([^)]+)\)/,
+                              (match, x, y) => `translate(calc(${x} - 100%), calc(${y} - 200%))`
+                            )
+                          : provided.draggableProps.style?.transform
+                      }}
+                    >
+                      <div className="todo-item">
+                        <div className="checkbox-wrapper-12">
+                          <div className="cbx">
+                            <input
+                              id={`cbx-${todo.id}`}
+                              type="checkbox"
+                              checked={todo.completed}
+                              onChange={() => handleToggle(todo.id)}
+                            />
+                            <label htmlFor={`cbx-${todo.id}`}></label>
+                            <svg width="15" height="14" viewBox="0 0 15 14" fill="none">
+                              <path d="M2 8.36364L6.23077 12L13 2"></path>
+                            </svg>
+                          </div>
+                          <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                            <defs>
+                              <filter id="goo-12">
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+                                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 22 -7" result="goo-12" />
+                                <feBlend in="SourceGraphic" in2="goo-12" />
+                              </filter>
+                            </defs>
+                          </svg>
+                        </div>
+                        {editingId === todo.id ? (
+                          <input
+                            autoFocus
+                            type="text"
+                            value={editingText}
+                            onChange={handleEditChange}
+                            onBlur={() => handleEditSubmit(todo.id)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleEditSubmit(todo.id);
+                            }}
+                            className="edit-input"
+                          />
+                        ) : (
+                          <span
+                            onClick={() => handleEdit(todo.id, todo.text)}
+                            className="todo-text"
+                            title="Cliquer pour modifier"
+                          >
+                            {todo.text}
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleDelete(todo.id)}
+                        className="delete-btn"
+                        title="Supprimer"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
+                          <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                        </svg>
+                      </button>
+                    </li>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </ul>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 }
