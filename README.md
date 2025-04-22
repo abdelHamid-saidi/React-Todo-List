@@ -27,8 +27,8 @@ Une application Todo moderne et responsive construite avec **ReactJS**. Cette ap
 ```bash
 
 # Clone le dépôt
-git clone https://github.com/ton-utilisateur/todo-react-app.git
-cd todo-react-app
+git clone https://github.com/abdelHamid-saidi/TODO-list.git
+cd TODO-list
 
 # Installe les dépendances
 npm install
