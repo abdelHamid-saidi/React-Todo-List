@@ -9,10 +9,27 @@ function App() {
   const [editingText, setEditingText] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.body.className = darkMode ? "dark" : "";
   }, [darkMode]);
+
+  useEffect(() => {
+    const data = localStorage.getItem("todos-store");
+    if (data) {
+      const parsed = JSON.parse(data);
+      const now = Date.now();
+      const valid = parsed.filter(t => now - t.timestamp < 2 * 24 * 60 * 60 * 1000);
+      setTodos(valid);
+    }
+    setTimeout(() => setLoading(false), 2800);
+  }, []);
+
+  useEffect(() => {
+    // const withTimestamp = todos.map(t => ({ ...t, timestamp: Date.now() }));
+    // localStorage.setItem("todos-store", JSON.stringify(withTimestamp));
+  }, [todos]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -65,7 +82,7 @@ function App() {
     setTodos(items);
   };
 
-    const sunIcon = (
+  const sunIcon = (
     <svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="34" height="34">
       <path
         d="M965.23,530.62a13.33,13.33,0,1,1-13.33-13.33,13.33,13.33,0,0,1,13.33,13.33m-11.66-18.33a1.67,1.67,0,1,1-1.67-1.67,1.66,1.66,0,0,1,1.67,1.67m0,36.66a1.67,1.67,0,1,1-1.67-1.66,1.67,1.67,0,0,1,1.67,1.66m16.66-16.66a1.67,1.67,0,1,1,1.67-1.67,1.66,1.66,0,0,1-1.67,1.67m-36.66,0a1.67,1.67,0,1,1,1.66-1.67,1.67,1.67,0,0,1-1.66,1.67M966,518.83a1.66,1.66,0,1,1-2.39-2.31l0,0a1.66,1.66,0,0,1,2.35,2.35m-25.93,25.93a1.66,1.66,0,0,1-2.39-2.31l0,0a1.66,1.66,0,0,1,2.35,2.35m23.58,0a1.67,1.67,0,0,1,2.31-2.4l0,0a1.66,1.66,0,0,1-2.35,2.35m-25.93-25.93a1.67,1.67,0,0,1,2.31-2.4l0,.05a1.66,1.66,0,0,1-2.35,2.35"
@@ -93,11 +110,20 @@ function App() {
     </svg>
   );
 
-  return (
+  return loading ? (
+    <div className="loader-container">
+      <span className="loader"></span>
+    </div>
+  ) : (
     <div className="todo-container">
       <div className="header-bar">
-        <img src="./svg/logo.svg" alt="Logo" className="logo" />
-        <h2>Ma Todo List</h2>
+        <svg className="header-logo pointer" 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 64 64">
+            <defs/>
+            <path d="m21.76,6l4.24,4.24-13.24,13.24L4,14.73l4.24-4.24,4.52,4.52,9-9Zm-9,25l-4.52-4.52-4.24,4.24,8.76,8.76,13.24-13.24-4.24-4.24-9,9Zm0,16l-4.52-4.52-4.24,4.24,8.76,8.76,13.24-13.24-4.24-4.24-9,9ZM28,13v6h28v-6h-28Zm0,22h28v-6h-28v6Zm0,16h28v-6h-28v6Z"/>
+        </svg>
+        <h2 className="pointer">Ma Todo List</h2>
         <button onClick={() => setDarkMode((prev) => !prev)} className="icon-btn theme-btn">
            {darkMode ? sunIcon : moonIcon}
         </button>
