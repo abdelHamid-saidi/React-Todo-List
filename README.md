@@ -2,8 +2,13 @@
 
 Une application Todo moderne et responsive construite avec **ReactJS**. Cette app permet de gérer des tâches quotidiennes avec une interface agréable, un mode clair/sombre, et des fonctionnalités d'édition et de suppression en un clic.
 
-🔗 [Voir la démo en ligne](https://abdelhamid-saidi.github.io/React-Todo-List/)
 
+##  Démo en ligne
+
+  <a href="https://abdelhamid-saidi.github.io/React-Todo-List/" target="_blank">
+    <img src="https://github.com/user-attachments/assets/c32a4077-64b0-4caf-8b45-fdabc651e6d4" alt="Démo bouton" height="60">
+  </a>
+  
 
 ##  Aperçu
 
